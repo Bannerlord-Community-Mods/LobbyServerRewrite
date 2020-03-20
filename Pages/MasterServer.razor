@@ -1,0 +1,36 @@
+﻿@page "/secret/group/stuff"
+@using System.ComponentModel.DataAnnotations
+@using LobbyServer.Db
+
+@inject ApiContext ApiContext
+<h1>Counter</h1>
+
+<p>Current Player Count: @ApiContext.Users.Count</p>
+<p>Current Server Count: @ApiContext.Users.Count(x => x.HostedServer != null)</p>
+
+<EditForm Model="@_exampleModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText id="name" @bind-Value="_exampleModel.SteamID" />
+
+    <button type="submit">Submit</button>
+</EditForm>
+@code {
+    
+    public class SubmitSteamID
+    {
+        [Required]
+        public string  SteamID { get; set; }
+    }
+    private SubmitSteamID _exampleModel = new SubmitSteamID();
+
+    private void HandleValidSubmit()
+    {
+        ApiContext.SteamIDS.Add(ulong.Parse( this._exampleModel.SteamID));
+        ApiContext.Save();
+        this._exampleModel.SteamID = "";
+
+        Console.WriteLine("OnValidSubmit");
+    }
+}
